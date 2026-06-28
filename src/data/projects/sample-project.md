@@ -2,6 +2,7 @@
 title: "Sample Local Project"
 date: "2026-06-28"
 description: "This is a sample project to demonstrate local markdown parsing."
+link: "https://github.com/benjamin-shih-tw/portfolio-blog"
 ---
 
 # Sample Project

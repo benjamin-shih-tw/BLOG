@@ -238,9 +238,9 @@ p {
   border: 1.5px solid var(--ink);
   border-radius: 12px;
   padding: 3rem;
-  margin-top: 2rem;
+  margin-top: 0;
   box-shadow: 4px 6px 0px rgba(27, 43, 72, 0.1);
-  max-width: 800px;
+  max-width: 100%;
 }
 
 .project-container h1 {
@@ -270,6 +270,44 @@ p {
   font-family: var(--font-inter), monospace;
   margin-bottom: var(--line-height);
   line-height: 1.4;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 2rem;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 600;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+}
+
+.back-link:hover {
+  color: var(--red);
+}
+
+.project-link-wrapper {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px dashed var(--line-color);
+}
+
+.external-link-btn {
+  display: inline-block;
+  background-color: var(--ink);
+  color: var(--paper);
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-family: var(--font-inter), sans-serif;
+  font-weight: 600;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.external-link-btn:hover {
+  transform: translateY(-2px);
+  background-color: var(--blue);
+  color: var(--paper);
 }
 
 /* Tabs Filter */
