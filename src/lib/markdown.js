@@ -60,7 +60,12 @@ export async function getProjectData(slug) {
   const processedContent = await remark()
     .use(html)
     .process(matterResult.content);
-  const contentHtml = processedContent.toString();
+  let contentHtml = processedContent.toString();
+
+  // If building for GitHub Pages, prepend the repository name to absolute image paths
+  if (process.env.NODE_ENV === 'production') {
+    contentHtml = contentHtml.replace(/src="\/([^"]+)"/g, 'src="/portfolio-blog/$1"');
+  }
 
   // Combine the data with the id and contentHtml
   return {
