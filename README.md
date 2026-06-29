@@ -1,19 +1,3 @@
-Edited task.md
-Edited page.js
-Edited PortfolioFilter.js
-Edited page.js
-Edited sample-project.md
-Created my-github-project.md
-Ran command: `rm src/lib/github.js && git add . && git commit -m "Simplify architecture: use markdown for both blog and projects" && git push`
-
-我已經為您徹底翻新了架構！現在您的部落格非常單純且強大：**所有東西都只靠 Markdown 檔案來控制**。
-
-您的 GitHub Projects 頁面現在的長相會跟 Blog 頁面一模一樣，點進去也都有屬於自己可以自由排版的文章區，並且只有 Projects 分頁裡的文章會有超連結按鈕。
-
-我已經把程式碼推上去了，等幾秒鐘後您就可以重新整理網頁看看最新的成果。
-
----
-
 ### 📖 您的專屬未來更新教學 (超級簡單)
 
 未來不論您要新增「部落格筆記」或是「展示新的 GitHub 專案」，**唯一要做的事情就是：在 `src/data/projects/` 資料夾中新增 `.md` 檔案！**
