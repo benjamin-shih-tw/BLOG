@@ -3,6 +3,9 @@ name: Deploy Next.js site to Pages
 on:
   push:
     branches: ["main"]
+  schedule:
+    # 每天凌晨 00:00 (UTC) 自動重跑一次，抓取 Notion 最新資料
+    - cron: '0 0 * * *'
   workflow_dispatch:
 
 permissions:
