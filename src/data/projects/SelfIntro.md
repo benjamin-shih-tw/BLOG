@@ -12,5 +12,4 @@ type: "blog"
 但我主要是專注在**競程**上，長期目標為 **2027** 年的奧匹，（本人很菜，真的很菜 🛐，再者，學校在競程方面可以給的資源頗少，因此需要自己找,自己學大部分的東西
 
 Handles :
-
-| Codeforces,Atcoder : benjaminshih2 | others : benjaminshih
+| Codeforces,Atcoder : benjaminshih2 | others : benjaminshih |
