@@ -3,6 +3,7 @@ title: "AtCoderStreakWidget"
 date: "2026-07-11"
 description: "APP for atcoder"
 type: "project"
+slug: "atcoder-streak-widget"
 link: "https://github.com/benjamin-shih-tw/AtCoderStreakWidget"
 ---
 
