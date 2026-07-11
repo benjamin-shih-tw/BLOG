@@ -32,7 +32,7 @@ async function syncBlog() {
 
     console.log(`✅ 讀取完畢：共找到 ${response.results.length} 篇準備發布的文章。`);
 
-    const outputDir = path.join(__dirname, "content", "posts");
+    const outputDir = path.join(__dirname, "src", "data", "projects");
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
     }
@@ -47,9 +47,14 @@ async function syncBlog() {
       const mdblocks = await n2m.pageToMarkdown(page.id);
       const mdString = n2m.toMarkdownString(mdblocks);
 
+      // 擷取 Description (如果 Notion 有這個欄位的話)，否則給空字串
+      const description = page.properties.Description?.rich_text[0]?.plain_text || "";
+
       const frontmatter = `---
 title: "${title}"
 date: "${date}"
+description: "${description}"
+type: "blog"
 ---
 
 `;
