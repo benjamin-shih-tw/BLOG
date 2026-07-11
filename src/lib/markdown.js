@@ -64,7 +64,7 @@ export async function getProjectData(slug) {
 
   // If building for GitHub Pages, prepend the repository name to absolute image paths
   if (process.env.NODE_ENV === 'production') {
-    contentHtml = contentHtml.replace(/src="\/([^"]+)"/g, 'src="/portfolio-blog/$1"');
+    contentHtml = contentHtml.replace(/src="\/([^"]+)"/g, 'src="/BLOG/$1"');
   }
 
   // Combine the data with the id and contentHtml
