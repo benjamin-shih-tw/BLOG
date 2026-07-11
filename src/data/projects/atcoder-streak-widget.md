@@ -3,7 +3,6 @@ title: "AtCoderStreakWidget"
 date: "2026-07-11"
 description: "APP for atcoder"
 type: "project"
-slug: "atcoder-streak-widget"
 link: "https://github.com/benjamin-shih-tw/AtCoderStreakWidget"
 ---
 
@@ -11,15 +10,15 @@ link: "https://github.com/benjamin-shih-tw/AtCoderStreakWidget"
 
 ## 起源
 
-因為我競程太菜了，所以請教了各個大電神以後得出了**以下結論**
+因為我競程太菜了，所以請教了各個大電神以後得出了**以下結論**，由四位國手的建議：
 **國手1**
 ![圖一](/image/screenshot-3.png)
 **國手2**
-![圖一](/image/screenshot-4.png)
+![圖二](/image/screenshot-4.png)
 **國手3**
-![圖一](/image/screenshot-5.png)
+![圖三](/image/screenshot-5.png)
 **國手4**
-![圖一](/image/screenshot-6.png)
+![圖四](/image/screenshot-6.png)
 
 # 刷 Atcoder 很很很很很很很重要
 
