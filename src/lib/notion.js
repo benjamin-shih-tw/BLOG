@@ -32,6 +32,11 @@ export async function getNotionPosts() {
       const slug = page.properties.Slug?.rich_text[0]?.plain_text || page.id;
       const date = page.properties.Date?.date?.start || new Date().toISOString().split('T')[0];
       const description = page.properties.Description?.rich_text[0]?.plain_text || '';
+      
+      // 嘗試讀取 Notion 裡的 Type (支援 Select 或 Text 格式)，預設為 'blog'
+      const type = page.properties.Type?.select?.name || page.properties.Type?.rich_text?.[0]?.plain_text || 'blog';
+      // 嘗試讀取 Notion 裡的 Link (支援 URL 或 Text 格式)
+      const link = page.properties.Link?.url || page.properties.Link?.rich_text?.[0]?.plain_text || null;
 
       return {
         id: page.id,
@@ -39,7 +44,8 @@ export async function getNotionPosts() {
         title,
         date,
         description,
-        type: 'blog', // Default to blog for Notion posts
+        type: type.toLowerCase(), // 轉小寫以利比對
+        link,
         isNotion: true,
       };
     });
