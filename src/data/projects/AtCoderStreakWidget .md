@@ -1,5 +1,5 @@
 ---
-title: "AtCoderStreakWidget "
+title: "AtCoderStreakWidget"
 date: "2026-07-11"
 description: "APP for atcoder"
 type: "project"
