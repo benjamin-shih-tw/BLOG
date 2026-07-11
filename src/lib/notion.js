@@ -13,18 +13,21 @@ export async function getNotionPosts() {
   const databaseId = process.env.NOTION_DATABASE_ID;
 
   try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: {
-        property: 'Status',
-        status: { equals: 'Published' },
-      },
-      sorts: [
-        {
-          property: 'Date',
-          direction: 'descending',
+    const response = await notion.request({
+      path: `databases/${databaseId}/query`,
+      method: "post",
+      body: {
+        filter: {
+          property: 'Status',
+          status: { equals: 'Published' },
         },
-      ],
+        sorts: [
+          {
+            property: 'Date',
+            direction: 'descending',
+          },
+        ],
+      }
     });
 
     return response.results.map((page) => {
@@ -63,10 +66,15 @@ export async function getNotionPostBlocks(blockId) {
   
   try {
     while (true) {
-      const { results, next_cursor } = await notion.blocks.children.list({
-        start_cursor: cursor,
-        block_id: blockId,
+      const queryParams = new URLSearchParams();
+      if (cursor) queryParams.append('start_cursor', cursor);
+      
+      const response = await notion.request({
+        path: `blocks/${blockId}/children?${queryParams.toString()}`,
+        method: "get"
       });
+      const results = response.results;
+      const next_cursor = response.next_cursor;
       
       blocks.push(...results);
       if (!next_cursor) {
