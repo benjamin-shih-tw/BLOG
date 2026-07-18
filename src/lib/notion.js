@@ -6,29 +6,49 @@ const notion = new Client({
 
 export async function getNotionPosts() {
   if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
-    console.warn("NOTION_TOKEN or NOTION_DATABASE_ID is missing.");
+    console.warn("⚠️  NOTION_TOKEN or NOTION_DATABASE_ID is missing.");
     return [];
   }
 
   const databaseId = process.env.NOTION_DATABASE_ID;
+  console.log("🔍 Querying Notion DB:", databaseId);
 
   try {
-    // 使用官方高階 API，避免底層 notion.request() 的 URL 格式問題
+    // 先不加 filter，抓取全部頁面來測試連線
     const response = await notion.databases.query({
       database_id: databaseId,
-      filter: {
-        property: 'Status',
-        status: { equals: 'Published' },
-      },
-      sorts: [
-        {
-          property: 'Date',
-          direction: 'descending',
-        },
-      ],
     });
 
-    return response.results.map((page) => {
+    console.log(`✅ Notion returned ${response.results.length} total pages`);
+
+    if (response.results.length > 0) {
+      // 印出第一筆的 properties，幫助排查格式問題
+      const firstPage = response.results[0];
+      console.log("📄 First page properties:", JSON.stringify(
+        Object.fromEntries(
+          Object.entries(firstPage.properties).map(([k, v]) => [k, { type: v.type }])
+        )
+      ));
+      const statusProp = firstPage.properties.Status;
+      console.log("📊 Status property raw:", JSON.stringify(statusProp));
+    }
+
+    // 篩選出已發佈的文章（支援 status 或 select 兩種屬性格式）
+    const published = response.results.filter((page) => {
+      const statusProp = page.properties.Status;
+      if (!statusProp) return false;
+      if (statusProp.type === 'status') {
+        return statusProp.status?.name === 'Published';
+      }
+      if (statusProp.type === 'select') {
+        return statusProp.select?.name === 'Published';
+      }
+      return false;
+    });
+
+    console.log(`📝 Published pages: ${published.length}`);
+
+    return published.map((page) => {
       const title = page.properties.Title?.title[0]?.plain_text || '未命名文章';
       const slug = page.properties.Slug?.rich_text[0]?.plain_text || page.id;
       const date = page.properties.Date?.date?.start || new Date().toISOString().split('T')[0];
@@ -51,7 +71,7 @@ export async function getNotionPosts() {
       };
     });
   } catch (error) {
-    console.error("Error fetching Notion posts:", error);
+    console.error("❌ Error fetching Notion posts:", error.message);
     return [];
   }
 }
@@ -78,7 +98,7 @@ export async function getNotionPostBlocks(blockId) {
     }
     return blocks;
   } catch (error) {
-    console.error(`Error fetching blocks for blockId ${blockId}:`, error);
+    console.error(`❌ Error fetching blocks for blockId ${blockId}:`, error.message);
     return [];
   }
 }
