@@ -27,7 +27,6 @@ export async function getNotionPosts() {
       body: JSON.stringify({
         sorts: [{ property: 'Date', direction: 'descending' }],
       }),
-      cache: 'no-store',
     });
 
     if (!res.ok) {
