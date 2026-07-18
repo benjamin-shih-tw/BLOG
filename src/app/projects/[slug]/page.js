@@ -3,7 +3,8 @@ import { getNotionPosts, getNotionPostBlocks } from '@/lib/notion';
 import NotionRenderer from '@/components/NotionRenderer';
 import Link from 'next/link';
 
-export const revalidate = 60; // ISR support (if deployed to Vercel/similar), otherwise static
+
+
 
 export async function generateStaticParams() {
   const localSlugs = getAllProjectSlugs();

@@ -102,7 +102,6 @@ export async function getNotionPostBlocks(blockId) {
       const res = await fetch(url, {
         method: 'GET',
         headers: notionHeaders(),
-        cache: 'no-store',
       });
 
       if (!res.ok) {
