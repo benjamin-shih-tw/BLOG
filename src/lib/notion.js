@@ -13,21 +13,19 @@ export async function getNotionPosts() {
   const databaseId = process.env.NOTION_DATABASE_ID;
 
   try {
-    const response = await notion.request({
-      path: `databases/${databaseId}/query`,
-      method: "post",
-      body: {
-        filter: {
-          property: 'Status',
-          status: { equals: 'Published' },
+    // 使用官方高階 API，避免底層 notion.request() 的 URL 格式問題
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        property: 'Status',
+        status: { equals: 'Published' },
+      },
+      sorts: [
+        {
+          property: 'Date',
+          direction: 'descending',
         },
-        sorts: [
-          {
-            property: 'Date',
-            direction: 'descending',
-          },
-        ],
-      }
+      ],
     });
 
     return response.results.map((page) => {
@@ -66,21 +64,17 @@ export async function getNotionPostBlocks(blockId) {
   
   try {
     while (true) {
-      const queryParams = new URLSearchParams();
-      if (cursor) queryParams.append('start_cursor', cursor);
-      
-      const response = await notion.request({
-        path: `blocks/${blockId}/children?${queryParams.toString()}`,
-        method: "get"
+      // 使用官方高階 API
+      const response = await notion.blocks.children.list({
+        block_id: blockId,
+        ...(cursor ? { start_cursor: cursor } : {}),
       });
-      const results = response.results;
-      const next_cursor = response.next_cursor;
       
-      blocks.push(...results);
-      if (!next_cursor) {
+      blocks.push(...response.results);
+      if (!response.next_cursor) {
         break;
       }
-      cursor = next_cursor;
+      cursor = response.next_cursor;
     }
     return blocks;
   } catch (error) {
