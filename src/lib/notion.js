@@ -1,8 +1,15 @@
-import { Client } from '@notionhq/client';
+// 完全不使用 @notionhq/client SDK，改用原生 fetch 呼叫 Notion API
+// 這樣就完全繞過 Turbopack 把 SDK 打包壞掉的問題
 
-const notion = new Client({
-  auth: process.env.NOTION_TOKEN,
-});
+const NOTION_API = 'https://api.notion.com/v1';
+
+function notionHeaders() {
+  return {
+    'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
+    'Notion-Version': '2022-06-28',
+    'Content-Type': 'application/json',
+  };
+}
 
 export async function getNotionPosts() {
   if (!process.env.NOTION_TOKEN || !process.env.NOTION_DATABASE_ID) {
@@ -14,27 +21,32 @@ export async function getNotionPosts() {
   console.log("🔍 Querying Notion DB:", databaseId);
 
   try {
-    // 先不加 filter，抓取全部頁面來測試連線
-    const response = await notion.databases.query({
-      database_id: databaseId,
+    const res = await fetch(`${NOTION_API}/databases/${databaseId}/query`, {
+      method: 'POST',
+      headers: notionHeaders(),
+      body: JSON.stringify({
+        sorts: [{ property: 'Date', direction: 'descending' }],
+      }),
+      cache: 'no-store',
     });
 
-    console.log(`✅ Notion returned ${response.results.length} total pages`);
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("❌ Notion API error:", res.status, errText);
+      return [];
+    }
 
-    if (response.results.length > 0) {
-      // 印出第一筆的 properties，幫助排查格式問題
-      const firstPage = response.results[0];
-      console.log("📄 First page properties:", JSON.stringify(
-        Object.fromEntries(
-          Object.entries(firstPage.properties).map(([k, v]) => [k, { type: v.type }])
-        )
-      ));
+    const data = await res.json();
+    console.log(`✅ Notion returned ${data.results.length} total pages`);
+
+    if (data.results.length > 0) {
+      const firstPage = data.results[0];
       const statusProp = firstPage.properties.Status;
       console.log("📊 Status property raw:", JSON.stringify(statusProp));
     }
 
     // 篩選出已發佈的文章（支援 status 或 select 兩種屬性格式）
-    const published = response.results.filter((page) => {
+    const published = data.results.filter((page) => {
       const statusProp = page.properties.Status;
       if (!statusProp) return false;
       if (statusProp.type === 'status') {
@@ -54,9 +66,9 @@ export async function getNotionPosts() {
       const date = page.properties.Date?.date?.start || new Date().toISOString().split('T')[0];
       const description = page.properties.Description?.rich_text[0]?.plain_text || '';
       
-      // 嘗試讀取 Notion 裡的 Type (支援 Select 或 Text 格式)，預設為 'blog'
+      // 嘗試讀取 Type (支援 Select 或 Text 格式)，預設為 'blog'
       const type = page.properties.Type?.select?.name || page.properties.Type?.rich_text?.[0]?.plain_text || 'blog';
-      // 嘗試讀取 Notion 裡的 Link (支援 URL 或 Text 格式)
+      // 嘗試讀取 Link (支援 URL 或 Text 格式)
       const link = page.properties.Link?.url || page.properties.Link?.rich_text?.[0]?.plain_text || null;
 
       return {
@@ -65,7 +77,7 @@ export async function getNotionPosts() {
         title,
         date,
         description,
-        type: type.toLowerCase(), // 轉小寫以利比對
+        type: type.toLowerCase(),
         link,
         isNotion: true,
       };
@@ -80,21 +92,30 @@ export async function getNotionPostBlocks(blockId) {
   if (!process.env.NOTION_TOKEN) return [];
   
   const blocks = [];
-  let cursor;
+  let cursor = null;
   
   try {
     while (true) {
-      // 使用官方高階 API
-      const response = await notion.blocks.children.list({
-        block_id: blockId,
-        ...(cursor ? { start_cursor: cursor } : {}),
+      const url = cursor
+        ? `${NOTION_API}/blocks/${blockId}/children?start_cursor=${cursor}`
+        : `${NOTION_API}/blocks/${blockId}/children`;
+
+      const res = await fetch(url, {
+        method: 'GET',
+        headers: notionHeaders(),
+        cache: 'no-store',
       });
-      
-      blocks.push(...response.results);
-      if (!response.next_cursor) {
+
+      if (!res.ok) {
+        console.error(`❌ Error fetching blocks: ${res.status}`);
         break;
       }
-      cursor = response.next_cursor;
+
+      const data = await res.json();
+      blocks.push(...data.results);
+      
+      if (!data.next_cursor) break;
+      cursor = data.next_cursor;
     }
     return blocks;
   } catch (error) {
