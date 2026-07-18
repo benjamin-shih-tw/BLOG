@@ -3,6 +3,8 @@ const nextConfig = {
   output: 'export',
   basePath: '/BLOG',
   assetPrefix: '/BLOG',
+  // 防止 Turbopack 把 @notionhq/client 打包壞掉，保持原始 Node.js 模組形式
+  serverExternalPackages: ['@notionhq/client'],
   images: {
     unoptimized: true,
     remotePatterns: [
